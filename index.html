@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Awesome cropper Tests</title>
+
+  <script src="components/jquery/jquery.js"></script>
+  <script src="components/bootstrap/js/bootstrap.js"></script>
+  <script src="components/imgareaselect/scripts/jquery.imgareaselect.js"></script>
+  <script src="build/jquery.awesome-cropper.js"></script>
+
+  <link rel="stylesheet" href="components/bootstrap/css/bootstrap-responsive.css">
+  <link rel="stylesheet" href="components/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="components/imgareaselect/css/imgareaselect-default.css">
+  <script>
+  $(document).ready(function () {
+      $('#sample_input').awesomeCropper(
+        { maxWidth: 200, maxHeight: 150, handles: true }
+      );
+  });
+  </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Awesome image cropper</h1>
+      <form>
+        <input id="sample_input" type="hidden" name="">
+      </form>
+    </div>
+  </body>
+</html>
