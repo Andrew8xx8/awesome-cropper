@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
+    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $progressBar, $resultIm, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
     settings = {
       width: 100,
       height: 100,
@@ -30,15 +30,6 @@
     image = function() {
       return $('<img/>');
     };
-    generateImputName = function(f) {
-      var name;
-      name = $inputAttachTo.attr('name');
-      if (name.match(/\]$/)) {
-        return name.replace(/\]$/, "_" + f + "]");
-      } else {
-        return name + ("_" + f);
-      }
-    };
     $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper');
     $cropSandbox = $('<canvas></canvas>');
     $cropSandbox.attr({
@@ -46,12 +37,6 @@
       height: settings.height
     });
     $container.append($cropSandbox);
-    $input_url = input('hidden').attr('name', generateImputName('url'));
-    $input_x = input('hidden').attr('name', generateImputName('x'));
-    $input_y = input('hidden').attr('name', generateImputName('y'));
-    $input_w = input('hidden').attr('name', generateImputName('w'));
-    $input_h = input('hidden').attr('name', generateImputName('h'));
-    $container.append($input_url).append($input_x).append($input_y).append($input_w).append($input_h);
     $fileSelect = input('file');
     $container.append(div().addClass('control-group').append($fileSelect));
     $urlSelect = input('text');
@@ -60,6 +45,8 @@
     $container.append(div().addClass('control-group form-inline').append($urlSelect).append($urlSelectButton));
     $progressBar = div().addClass('progress progress-striped active hide').append(div().addClass('bar').css('width', '100%'));
     $container.append($progressBar);
+    $resultIm = image();
+    $container.append($resultIm);
     $sourceIm = image();
     $applyButton = a('Apply').addClass('btn btn-primary');
     $cancelButton = a('Cancel').addClass('btn').attr({
@@ -119,11 +106,7 @@
           destWidth = settings.width;
           destHeight = settings.height;
           console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-          context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-          $input_x.val(selection.x1);
-          $input_y.val(selection.y1);
-          $input_w.val(selection.width);
-          return $input_h.val(selection.height);
+          return context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
         }
       });
     };
@@ -155,6 +138,10 @@
       return readFile(evt.target.files[0]);
     };
     saveCrop = function() {
+      var result;
+      result = $cropSandbox.get(0).toDataURL();
+      $resultIm.attr('src', result);
+      $inputAttachTo.val(result);
       return cleanImages();
     };
     $fileSelect.bind('change', handleFileSelect);

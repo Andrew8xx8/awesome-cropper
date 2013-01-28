@@ -30,14 +30,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
   image = () ->
     return $('<img/>')
 
-  generateImputName = (f) ->
-    name = $inputAttachTo.attr('name')
-    if name.match /\]$/
-      name.replace /\]$/, "_#{f}]"
-    else
-      name + "_#{f}"
-
-
   # Main box
   $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper')
 
@@ -47,14 +39,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
     height: settings.height
 
   $container.append($cropSandbox)
-
-  # Inputs with URL, width, height, x, y
-  $input_url = input('hidden').attr('name', generateImputName('url'))
-  $input_x   = input('hidden').attr('name', generateImputName('x'))
-  $input_y   = input('hidden').attr('name', generateImputName('y'))
-  $input_w   = input('hidden').attr('name', generateImputName('w'))
-  $input_h   = input('hidden').attr('name', generateImputName('h'))
-  $container.append($input_url).append($input_x).append($input_y).append($input_w).append($input_h)
 
   # File chooser
   $fileSelect = input('file')
@@ -79,6 +63,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
     div().addClass('bar').css('width', '100%')
   )
   $container.append($progressBar)
+
+  # Result Image
+  $resultIm = image()
+  $container.append($resultIm)
 
   # Modal dialog with cropping
   $sourceIm = image()
@@ -150,10 +138,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
         console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
      
         context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
-        $input_x.val(selection.x1);
-        $input_y.val(selection.y1);
-        $input_w.val(selection.width);
-        $input_h.val(selection.height);
 
   removeAreaSelect = (image) ->
     image.imgAreaSelect
@@ -185,6 +169,9 @@ $.awesomeCropper = (inputAttachTo, options) ->
     readFile(evt.target.files[0])
 
   saveCrop = () ->
+    result = $cropSandbox.get(0).toDataURL()
+    $resultIm.attr('src', result)
+    $inputAttachTo.val(result)
     cleanImages()
 
   # Setup the listeners
