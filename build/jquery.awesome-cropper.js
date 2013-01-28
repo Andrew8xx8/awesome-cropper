@@ -5,13 +5,20 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $container, $dropArea, $fileSelect, $imagesContainer, $inputAttachTo, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, div, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, row, setAreaSelect, setImages, setLoading, settings;
+    var $container, $dropArea, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, row, setAreaSelect, setImages, setLoading, settings;
     settings = {
       width: 100,
       height: 100,
       debug: true
     };
-    input = function(type, name) {
+    settings = $.extend(settings, options);
+    log = function(msg) {
+      if (settings.debug) {
+        return typeof console !== "undefined" && console !== null ? console.log(msg) : void 0;
+      }
+    };
+    $inputAttachTo = $(inputAttachTo);
+    input = function(type) {
       return $("<input type = \"" + type + "\" />");
     };
     div = function() {
@@ -23,14 +30,22 @@
     row = function() {
       return div().addClass('row');
     };
-    settings = $.extend(settings, options);
-    log = function(msg) {
-      if (settings.debug) {
-        return typeof console !== "undefined" && console !== null ? console.log(msg) : void 0;
+    generateImputName = function(f) {
+      var name;
+      name = $inputAttachTo.attr('name');
+      if (name.match(/\]$/)) {
+        return name.replace(/\]$/, "_" + f + "]");
+      } else {
+        return name + ("_" + f);
       }
     };
-    $inputAttachTo = $(inputAttachTo);
     $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper row');
+    $input_url = input('hidden').attr('name', generateImputName('url'));
+    $input_x = input('hidden').attr('name', generateImputName('x'));
+    $input_y = input('hidden').attr('name', generateImputName('y'));
+    $input_w = input('hidden').attr('name', generateImputName('w'));
+    $input_h = input('hidden').attr('name', generateImputName('h'));
+    $container.append($input_url).append($input_x).append($input_y).append($input_w).append($input_h);
     $fileSelect = input('file');
     $container.append(row().append(div().addClass('span6 control-group').append($fileSelect)));
     $urlSelect = input('text');
@@ -85,13 +100,10 @@
           });
         },
         onSelectEnd: function(img, selection) {
-          var input_format;
-          input_format = $(img).attr('data-input-format');
-          console.log($("input[id^=\"" + input_format + "x\"]"));
-          $("input[id*=\"" + input_format + "x\"]").val(selection.x1);
-          $("input[id*=\"" + input_format + "y\"]").val(selection.y1);
-          $("input[id*=\"" + input_format + "w\"]").val(selection.width);
-          return $("input[id*=\"" + input_format + "h\"]").val(selection.height);
+          $input_x.val(selection.x1);
+          $input_y.val(selection.y1);
+          $input_w.val(selection.width);
+          return $input_h.val(selection.height);
         }
       });
     };

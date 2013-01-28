@@ -8,7 +8,17 @@ $.awesomeCropper = (inputAttachTo, options) ->
     height: 100
     debug: true
 
-  input = (type, name) ->
+  # Merge default settings with options.
+  settings = $.extend settings, options
+
+  # Simple logger.
+  log = (msg) ->
+    console?.log msg if settings.debug
+
+  # Input
+  $inputAttachTo = $(inputAttachTo)
+
+  input = (type) ->
     return $("<input type = \"#{type}\" />")
 
   div = () ->
@@ -20,19 +30,24 @@ $.awesomeCropper = (inputAttachTo, options) ->
   row = () ->
     div().addClass('row')
 
+  generateImputName = (f) ->
+    name = $inputAttachTo.attr('name')
+    if name.match /\]$/
+      name.replace /\]$/, "_#{f}]"
+    else
+      name + "_#{f}"
 
-  # Merge default settings with options.
-  settings = $.extend settings, options
-
-  # Simple logger.
-  log = (msg) ->
-    console?.log msg if settings.debug
-
-  # Input
-  $inputAttachTo = $(inputAttachTo)
 
   # Main box
   $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper row')
+
+  # Inputs with URL, width, height, x, y
+  $input_url = input('hidden').attr('name', generateImputName('url'))
+  $input_x   = input('hidden').attr('name', generateImputName('x'))
+  $input_y   = input('hidden').attr('name', generateImputName('y'))
+  $input_w   = input('hidden').attr('name', generateImputName('w'))
+  $input_h   = input('hidden').attr('name', generateImputName('h'))
+  $container.append($input_url).append($input_x).append($input_y).append($input_w).append($input_h)
 
   # File chooser
   $fileSelect = input('file')
@@ -122,12 +137,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
           marginLeft: '-' + Math.round(100/selection.width * selection.x1) + 'px'
           marginTop: '-' + Math.round(100/selection.height * selection.y1) + 'px'
       onSelectEnd: (img, selection) =>
-        input_format = $(img).attr('data-input-format')
-        console.log($("input[id^=\"#{input_format}x\"]"))
-        $("input[id*=\"#{input_format}x\"]").val(selection.x1);
-        $("input[id*=\"#{input_format}y\"]").val(selection.y1);
-        $("input[id*=\"#{input_format}w\"]").val(selection.width);
-        $("input[id*=\"#{input_format}h\"]").val(selection.height);
+        $input_x.val(selection.x1);
+        $input_y.val(selection.y1);
+        $input_w.val(selection.width);
+        $input_h.val(selection.height);
 
   removeAreaSelect = (image) ->
     image.imgAreaSelect.remove()
