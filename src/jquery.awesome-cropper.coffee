@@ -111,9 +111,22 @@ $.awesomeCropper = (inputAttachTo, options) ->
     $imagesContainer.modal()
     $progressBar.addClass('hide')
 
+  setOriginalSize = (img) ->
+    tempImage = new Image()
+
+    tempImage.onload = () ->  
+      width = tempImage.width
+      img.attr
+        'data-original-width': tempImage.width
+        'data-original-height': tempImage.height
+
+    tempImage.src = img.attr('src')
+
   setImages = (uri) ->
     $previewIm.attr('src', uri)
-    $sourceIm.attr('src', uri)
+    $sourceIm.attr('src', uri).load ->
+      setOriginalSize($sourceIm)
+      removeLoading()
     setAreaSelect($sourceIm)
 
   cleanImages = () ->
@@ -125,8 +138,8 @@ $.awesomeCropper = (inputAttachTo, options) ->
       aspectRatio: '1:1' 
       handles: true 
       onSelectChange: (img, selection) =>
-        scaleX = 100 / (selection.width || 1);
-        scaleY = 100 / (selection.height || 1);
+        scaleX = settings.width / (selection.width || 1);
+        scaleY = settings.height / (selection.height || 1);
 
         $previewIm.css
           width: Math.round(scaleX * $(img).width()) + 'px',
@@ -143,19 +156,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
     image.imgAreaSelect
       remove: true
 
-  fixSize = (img) ->
-    tempImage = new Image()
-    width = 0
-
-    tempImage.onload = () ->  
-      width = tempImage.width
-      r = width / img.width()
-      $input_x.val($input_x.val() * r);
-      $input_y.val($input_y.val() * r);
-      $input_w.val($input_w.val() * r);
-      $input_h.val($input_h.val() * r);
-
-    tempImage.src = img.attr('src')
 
   # Plugin images loading function
   readFile = (file) ->
@@ -165,7 +165,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
     reader.onload = (e) ->
       setImages(e.target.result)
-      removeLoading() 
 
     reader.readAsDataURL(file)
 
@@ -185,7 +184,11 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   saveCrop = () ->
     $input_url.val($sourceIm.attr('src'))
-    fixSize($sourceIm)
+    r = $sourceIm.attr('data-original-width') / $sourceIm.width()
+    $input_x.val($input_x.val() * r);
+    $input_y.val($input_y.val() * r);
+    $input_w.val($input_w.val() * r);
+    $input_h.val($input_h.val() * r);
     cleanImages()
 
   # Setup the listeners
@@ -194,8 +197,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $container.bind('drop', handleDropFileSelect)
   $urlSelectButton.click ->
     setLoading()
-    setImages($urlSelect.val()).load () ->
-      removeLoading()
+    setImages($urlSelect.val())
   $cancelButton.click ->
     removeAreaSelect($sourceIm)
   $applyButton.click ->

@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, fixSize, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, settings;
+    var $applyButton, $cancelButton, $container, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
     settings = {
       width: 100,
       height: 100,
@@ -80,9 +80,25 @@
       $imagesContainer.modal();
       return $progressBar.addClass('hide');
     };
+    setOriginalSize = function(img) {
+      var tempImage;
+      tempImage = new Image();
+      tempImage.onload = function() {
+        var width;
+        width = tempImage.width;
+        return img.attr({
+          'data-original-width': tempImage.width,
+          'data-original-height': tempImage.height
+        });
+      };
+      return tempImage.src = img.attr('src');
+    };
     setImages = function(uri) {
       $previewIm.attr('src', uri);
-      $sourceIm.attr('src', uri);
+      $sourceIm.attr('src', uri).load(function() {
+        setOriginalSize($sourceIm);
+        return removeLoading();
+      });
       return setAreaSelect($sourceIm);
     };
     cleanImages = function() {
@@ -96,8 +112,8 @@
         handles: true,
         onSelectChange: function(img, selection) {
           var scaleX, scaleY;
-          scaleX = 100 / (selection.width || 1);
-          scaleY = 100 / (selection.height || 1);
+          scaleX = settings.width / (selection.width || 1);
+          scaleY = settings.height / (selection.height || 1);
           return $previewIm.css({
             width: Math.round(scaleX * $(img).width()) + 'px',
             height: Math.round(scaleY * $(img).height()) + 'px',
@@ -118,28 +134,12 @@
         remove: true
       });
     };
-    fixSize = function(img) {
-      var tempImage, width;
-      tempImage = new Image();
-      width = 0;
-      tempImage.onload = function() {
-        var r;
-        width = tempImage.width;
-        r = width / img.width();
-        $input_x.val($input_x.val() * r);
-        $input_y.val($input_y.val() * r);
-        $input_w.val($input_w.val() * r);
-        return $input_h.val($input_h.val() * r);
-      };
-      return tempImage.src = img.attr('src');
-    };
     readFile = function(file) {
       var reader;
       reader = new FileReader();
       setLoading();
       reader.onload = function(e) {
-        setImages(e.target.result);
-        return removeLoading();
+        return setImages(e.target.result);
       };
       return reader.readAsDataURL(file);
     };
@@ -157,8 +157,13 @@
       return readFile(evt.target.files[0]);
     };
     saveCrop = function() {
+      var r;
       $input_url.val($sourceIm.attr('src'));
-      fixSize($sourceIm);
+      r = $sourceIm.attr('data-original-width') / $sourceIm.width();
+      $input_x.val($input_x.val() * r);
+      $input_y.val($input_y.val() * r);
+      $input_w.val($input_w.val() * r);
+      $input_h.val($input_h.val() * r);
       return cleanImages();
     };
     $fileSelect.bind('change', handleFileSelect);
@@ -166,9 +171,7 @@
     $container.bind('drop', handleDropFileSelect);
     $urlSelectButton.click(function() {
       setLoading();
-      return setImages($urlSelect.val()).load(function() {
-        return removeLoading();
-      });
+      return setImages($urlSelect.val());
     });
     $cancelButton.click(function() {
       return removeAreaSelect($sourceIm);
