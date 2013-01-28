@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $container, $dropArea, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, row, setAreaSelect, setImages, setLoading, settings;
+    var $applyButton, $cancelButton, $container, $dropArea, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, row, saveCrop, setAreaSelect, setImages, setLoading, settings;
     settings = {
       width: 100,
       height: 100,
@@ -23,6 +23,9 @@
     };
     div = function() {
       return $("<div/>");
+    };
+    a = function(text) {
+      return $("<a href=\"#\">" + text + "</a>");
     };
     image = function() {
       return $('<img/>');
@@ -64,24 +67,34 @@
       'max-width': 'none'
     });
     $sourceIm = image();
-    $imagesContainer = row().append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').css({
+    $applyButton = a('Apply').addClass('btn btn-primary');
+    $cancelButton = a('Cancel').addClass('btn').attr({
+      'data-dismiss': "modal",
+      'aria-hidden': "true"
+    });
+    $imagesContainer = div().append(div().addClass('modal-body').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').css({
       width: settings.width + "px",
       height: settings.height + "px",
       overflow: 'hidden'
-    }).append($previewIm));
+    }).append($previewIm))).append(div().addClass('modal-footer').append($cancelButton).append($applyButton)).addClass('modal hide fade').attr({
+      role: 'dialog'
+    });
     $container.append($imagesContainer);
     setLoading = function() {
-      $imagesContainer.hide();
       return $progressBar.removeClass('hide');
     };
     removeLoading = function() {
-      $imagesContainer.show();
+      $imagesContainer.modal();
       return $progressBar.addClass('hide');
     };
     setImages = function(uri) {
       $previewIm.attr('src', uri);
       $sourceIm.attr('src', uri);
       return setAreaSelect($sourceIm);
+    };
+    cleanImages = function() {
+      $previewIm.attr('src', '');
+      return $sourceIm.attr('src', '');
     };
     setAreaSelect = function(image) {
       var _this = this;
@@ -108,7 +121,9 @@
       });
     };
     removeAreaSelect = function(image) {
-      return image.imgAreaSelect.remove();
+      return image.imgAreaSelect({
+        remove: true
+      });
     };
     readFile = function(file) {
       var reader;
@@ -133,14 +148,26 @@
     handleFileSelect = function(evt) {
       return readFile(evt.target.files[0]);
     };
+    saveCrop = function() {
+      $input_url.val($sourceIm.attr('src'));
+      return cleanImages();
+    };
     $fileSelect.bind('change', handleFileSelect);
     $dropArea.bind('dragover', handleDragOver);
     $dropArea.bind('drop', handleDropFileSelect);
-    return $urlSelectButton.click(function() {
+    $urlSelectButton.click(function() {
       setLoading();
       return setImages($urlSelect.val()).load(function() {
         return removeLoading();
       });
+    });
+    $cancelButton.click(function() {
+      return removeAreaSelect($sourceIm);
+    });
+    return $applyButton.click(function() {
+      saveCrop();
+      $imagesContainer.modal('hide');
+      return removeAreaSelect($sourceIm);
     });
   };
 

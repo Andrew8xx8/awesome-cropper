@@ -24,6 +24,9 @@ $.awesomeCropper = (inputAttachTo, options) ->
   div = () ->
     return $("<div/>")
 
+  a = (text) ->
+    return $("<a href=\"#\">#{text}</a>")
+
   image = () ->
     return $('<img/>')
 
@@ -96,32 +99,46 @@ $.awesomeCropper = (inputAttachTo, options) ->
     height: settings.height + "px"
     'max-width': 'none'
 
+  # Modal dialog with cropping
   $sourceIm = image()
-  $imagesContainer = row().append(
-    div().addClass('span9')
-      .append($sourceIm)
+  $applyButton = a('Apply').addClass('btn btn-primary')
+  $cancelButton = a('Cancel').addClass('btn').attr
+    'data-dismiss': "modal"
+    'aria-hidden': "true"
+
+  $imagesContainer = div().append(
+    div().addClass('modal-body').append(
+      div().addClass('span9')
+        .append($sourceIm)
+    ).append(
+      div().addClass('span3 preview').css
+        width: settings.width + "px"
+        height: settings.height + "px"
+        overflow: 'hidden'
+      .append($previewIm)
+    )
   ).append(
-    div().addClass('span3 preview').css
-      width: settings.width + "px"
-      height: settings.height + "px"
-      overflow: 'hidden'
-    .append($previewIm)
-  )
+    div().addClass('modal-footer').append($cancelButton).append($applyButton)
+  ).addClass('modal hide fade').attr
+    role: 'dialog'
   $container.append($imagesContainer)
 
   # Plugin UI functions
   setLoading = () ->
-    $imagesContainer.hide()
     $progressBar.removeClass('hide')
  
   removeLoading = () ->
-    $imagesContainer.show()
+    $imagesContainer.modal()
     $progressBar.addClass('hide')
 
   setImages = (uri) ->
     $previewIm.attr('src', uri)
     $sourceIm.attr('src', uri)
     setAreaSelect($sourceIm)
+
+  cleanImages = () ->
+    $previewIm.attr('src', '')
+    $sourceIm.attr('src', '')
 
   setAreaSelect = (image) ->
     image.imgAreaSelect
@@ -143,7 +160,8 @@ $.awesomeCropper = (inputAttachTo, options) ->
         $input_h.val(selection.height);
 
   removeAreaSelect = (image) ->
-    image.imgAreaSelect.remove()
+    image.imgAreaSelect
+      remove: true
 
   # Plugin images loading function
   readFile = (file) ->
@@ -171,6 +189,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
   handleFileSelect = (evt) ->
     readFile(evt.target.files[0])
 
+  saveCrop = () ->
+    $input_url.val($sourceIm.attr('src'))
+    cleanImages()
+
   # Setup the dnd listeners.
   $fileSelect.bind('change', handleFileSelect)
   $dropArea.bind('dragover', handleDragOver)
@@ -179,6 +201,12 @@ $.awesomeCropper = (inputAttachTo, options) ->
     setLoading()
     setImages($urlSelect.val()).load () ->
       removeLoading()
+  $cancelButton.click ->
+    removeAreaSelect($sourceIm)
+  $applyButton.click ->
+    saveCrop()
+    $imagesContainer.modal('hide')
+    removeAreaSelect($sourceIm)
 
 
 # Adds plugin object to jQuery
