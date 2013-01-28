@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $dropArea, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, fixSize, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, settings;
+    var $applyButton, $cancelButton, $container, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, fixSize, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, settings;
     settings = {
       width: 100,
       height: 100,
@@ -52,9 +52,6 @@
     $urlSelectButton = input('button');
     $urlSelectButton.val('Upload from url');
     $container.append(div().addClass('control-group form-inline').append($urlSelect).append($urlSelectButton));
-    $dropArea = div().html('or Drop file here');
-    $dropArea.addClass('awesome-cropper-drop-area well');
-    $container.append($dropArea);
     $progressBar = div().addClass('progress progress-striped active hide').append(div().addClass('bar').css('width', '100%'));
     $container.append($progressBar);
     $previewIm = image().css({
@@ -165,8 +162,8 @@
       return cleanImages();
     };
     $fileSelect.bind('change', handleFileSelect);
-    $dropArea.bind('dragover', handleDragOver);
-    $dropArea.bind('drop', handleDropFileSelect);
+    $container.bind('dragover', handleDragOver);
+    $container.bind('drop', handleDropFileSelect);
     $urlSelectButton.click(function() {
       setLoading();
       return setImages($urlSelect.val()).load(function() {

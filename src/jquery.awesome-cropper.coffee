@@ -67,13 +67,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
       .append($urlSelectButton)
   )
 
-  # Drop area
-  $dropArea = div().html('or Drop file here')
-  $dropArea.addClass('awesome-cropper-drop-area well')
-  $container.append(
-    $dropArea
-  )
-
   # Progress bar
   $progressBar = div().addClass('progress progress-striped active hide').append(
     div().addClass('bar').css('width', '100%')
@@ -197,8 +190,8 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   # Setup the listeners
   $fileSelect.bind('change', handleFileSelect)
-  $dropArea.bind('dragover', handleDragOver)
-  $dropArea.bind('drop', handleDropFileSelect)
+  $container.bind('dragover', handleDragOver)
+  $container.bind('drop', handleDropFileSelect)
   $urlSelectButton.click ->
     setLoading()
     setImages($urlSelect.val()).load () ->
