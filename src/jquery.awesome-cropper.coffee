@@ -30,9 +30,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
   image = () ->
     return $('<img/>')
 
-  row = () ->
-    div().addClass('row')
-
   generateImputName = (f) ->
     name = $inputAttachTo.attr('name')
     if name.match /\]$/
@@ -42,7 +39,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
 
   # Main box
-  $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper row')
+  $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper')
 
   # Inputs with URL, width, height, x, y
   $input_url = input('hidden').attr('name', generateImputName('url'))
@@ -55,36 +52,29 @@ $.awesomeCropper = (inputAttachTo, options) ->
   # File chooser
   $fileSelect = input('file')
   $container.append(
-    row().append(
-      div().addClass('span6 control-group')
-        .append($fileSelect)
-    )
+    div().addClass('span12 control-group')
+      .append($fileSelect)
   )
 
   # URL input
   $urlSelect = input('text')
-  $urlSelect.addClass('asd')
   $urlSelectButton = input('button')
   $urlSelectButton.val('Upload from url')
 
   $container.append(
-    row().append(
-      div().addClass('span4 control-group')
-        .append($urlSelect)
-    ).append(
-      div().addClass('span2 control-group')
-        .append($urlSelectButton)
-    )
+    div().addClass('span4 control-group')
+      .append($urlSelect)
+  ).append(
+    div().addClass('span7 control-group')
+      .append($urlSelectButton)
   )
 
   # Drop area
   $dropArea = div().html('or Drop file here')
   $dropArea.addClass('awesome-cropper-drop-area well')
   $container.append(
-    row().append(
-      div().addClass('span6 control-group')
-      .append($dropArea)
-    )
+    div().addClass('span12 control-group')
+    .append($dropArea)
   )
 
   # Progress bar

@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $dropArea, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, row, saveCrop, setAreaSelect, setImages, setLoading, settings;
+    var $applyButton, $cancelButton, $container, $dropArea, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, settings;
     settings = {
       width: 100,
       height: 100,
@@ -30,9 +30,6 @@
     image = function() {
       return $('<img/>');
     };
-    row = function() {
-      return div().addClass('row');
-    };
     generateImputName = function(f) {
       var name;
       name = $inputAttachTo.attr('name');
@@ -42,7 +39,7 @@
         return name + ("_" + f);
       }
     };
-    $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper row');
+    $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper');
     $input_url = input('hidden').attr('name', generateImputName('url'));
     $input_x = input('hidden').attr('name', generateImputName('x'));
     $input_y = input('hidden').attr('name', generateImputName('y'));
@@ -50,15 +47,14 @@
     $input_h = input('hidden').attr('name', generateImputName('h'));
     $container.append($input_url).append($input_x).append($input_y).append($input_w).append($input_h);
     $fileSelect = input('file');
-    $container.append(row().append(div().addClass('span6 control-group').append($fileSelect)));
+    $container.append(div().addClass('span12 control-group').append($fileSelect));
     $urlSelect = input('text');
-    $urlSelect.addClass('asd');
     $urlSelectButton = input('button');
     $urlSelectButton.val('Upload from url');
-    $container.append(row().append(div().addClass('span4 control-group').append($urlSelect)).append(div().addClass('span2 control-group').append($urlSelectButton)));
+    $container.append(div().addClass('span4 control-group').append($urlSelect)).append(div().addClass('span7 control-group').append($urlSelectButton));
     $dropArea = div().html('or Drop file here');
     $dropArea.addClass('awesome-cropper-drop-area well');
-    $container.append(row().append(div().addClass('span6 control-group').append($dropArea)));
+    $container.append(div().addClass('span12 control-group').append($dropArea));
     $progressBar = div().addClass('progress progress-striped active hide').append(div().addClass('bar').css('width', '100%'));
     $container.append($progressBar);
     $previewIm = image().css({
