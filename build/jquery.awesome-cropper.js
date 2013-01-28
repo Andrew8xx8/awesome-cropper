@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
+    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
     settings = {
       width: 100,
       height: 100,
@@ -40,6 +40,12 @@
       }
     };
     $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper');
+    $cropSandbox = $('<canvas></canvas>');
+    $cropSandbox.attr({
+      width: settings.width,
+      height: settings.height
+    });
+    $container.append($cropSandbox);
     $input_url = input('hidden').attr('name', generateImputName('url'));
     $input_x = input('hidden').attr('name', generateImputName('x'));
     $input_y = input('hidden').attr('name', generateImputName('y'));
@@ -157,13 +163,26 @@
       return readFile(evt.target.files[0]);
     };
     saveCrop = function() {
-      var r;
+      var context, destHeight, destWidth, destX, destY, r, scaleX, scaleY, sourceHeight, sourceWidth, sourceX, sourceY;
       $input_url.val($sourceIm.attr('src'));
       r = $sourceIm.attr('data-original-width') / $sourceIm.width();
       $input_x.val($input_x.val() * r);
       $input_y.val($input_y.val() * r);
       $input_w.val($input_w.val() * r);
       $input_h.val($input_h.val() * r);
+      context = $cropSandbox.get(0).getContext('2d');
+      scaleX = settings.width / ($input_w.val() || 1);
+      scaleY = settings.height / ($input_h.val() || 1);
+      sourceX = $input_x.val();
+      sourceY = $input_y.val();
+      sourceWidth = $input_w.val();
+      sourceHeight = $input_h.val();
+      destWidth = settings.width;
+      destHeight = settings.height;
+      destX = 0;
+      destY = 0;
+      console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+      context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
       return cleanImages();
     };
     $fileSelect.bind('change', handleFileSelect);

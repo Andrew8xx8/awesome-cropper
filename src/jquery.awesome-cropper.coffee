@@ -41,6 +41,13 @@ $.awesomeCropper = (inputAttachTo, options) ->
   # Main box
   $container = div().insertAfter($inputAttachTo).addClass('awesome-cropper')
 
+  $cropSandbox = $('<canvas></canvas>')
+  $cropSandbox.attr
+    width: settings.width
+    height: settings.height
+
+  $container.append($cropSandbox)
+
   # Inputs with URL, width, height, x, y
   $input_url = input('hidden').attr('name', generateImputName('url'))
   $input_x   = input('hidden').attr('name', generateImputName('x'))
@@ -188,6 +195,28 @@ $.awesomeCropper = (inputAttachTo, options) ->
     $input_y.val($input_y.val() * r);
     $input_w.val($input_w.val() * r);
     $input_h.val($input_h.val() * r);
+    context = $cropSandbox.get(0).getContext('2d')
+
+    scaleX = settings.width / ($input_w.val() || 1);
+    scaleY = settings.height / ($input_h.val() || 1);
+
+    sourceX = $input_x.val()
+    sourceY = $input_y.val()
+    sourceWidth =$input_w.val() 
+    sourceHeight =$input_h.val() 
+    destWidth = settings.width;
+    destHeight = settings.height;
+    destX = 0;
+    destY = 0;
+
+    console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
+
+    #    w = Math.round(scaleX * $(img).width()) + 'px',
+    #    h = Math.round(scaleY * $(img).height()) + 'px',
+    #    x = Math.round(100/selection.width * selection.x1) + 'px'
+    #    y = Math.round(100/selection.height * selection.y1) + 'px'
+ 
+    context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
     cleanImages()
 
   # Setup the listeners
@@ -201,6 +230,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   $cancelButton.click ->
     removeAreaSelect($sourceIm)
+
   $applyButton.click ->
     saveCrop()
     $imagesContainer.modal('hide')
