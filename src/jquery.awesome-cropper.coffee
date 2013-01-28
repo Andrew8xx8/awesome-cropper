@@ -80,12 +80,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
   )
   $container.append($progressBar)
 
-  # Image and preview
-  $previewIm = image().css
-    width: settings.width + "px"
-    height: settings.height + "px"
-    'max-width': 'none'
-
   # Modal dialog with cropping
   $sourceIm = image()
   $applyButton = a('Apply').addClass('btn btn-primary')
@@ -98,11 +92,8 @@ $.awesomeCropper = (inputAttachTo, options) ->
       div().addClass('span9')
         .append($sourceIm)
     ).append(
-      div().addClass('span3 preview').css
-        width: settings.width + "px"
-        height: settings.height + "px"
-        overflow: 'hidden'
-      .append($previewIm)
+      div().addClass('span3 preview')
+      .append($cropSandbox)
     )
   ).append(
     div().addClass('modal-footer').append($cancelButton).append($applyButton)
@@ -130,30 +121,35 @@ $.awesomeCropper = (inputAttachTo, options) ->
     tempImage.src = img.attr('src')
 
   setImages = (uri) ->
-    $previewIm.attr('src', uri)
     $sourceIm.attr('src', uri).load ->
       setOriginalSize($sourceIm)
       removeLoading()
     setAreaSelect($sourceIm)
 
   cleanImages = () ->
-    $previewIm.attr('src', '')
     $sourceIm.attr('src', '')
 
   setAreaSelect = (image) ->
     image.imgAreaSelect
       aspectRatio: '1:1' 
       handles: true 
-      onSelectChange: (img, selection) =>
-        scaleX = settings.width / (selection.width || 1);
-        scaleY = settings.height / (selection.height || 1);
-
-        $previewIm.css
-          width: Math.round(scaleX * $(img).width()) + 'px',
-          height: Math.round(scaleY * $(img).height()) + 'px',
-          marginLeft: '-' + Math.round(100/selection.width * selection.x1) + 'px'
-          marginTop: '-' + Math.round(100/selection.height * selection.y1) + 'px'
       onSelectEnd: (img, selection) =>
+        r = $sourceIm.attr('data-original-width') / $sourceIm.width()
+        console.log(r)
+        context = $cropSandbox.get(0).getContext('2d')
+
+        sourceX = Math.round(selection.x1 * r)
+        sourceY = Math.round(selection.y1 * r)
+        sourceWidth = Math.round(selection.width * r)
+        sourceHeight = Math.round(selection.height * r)
+        destX = 0;
+        destY = 0;
+        destWidth = settings.width;
+        destHeight = settings.height;
+
+        console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
+     
+        context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
         $input_x.val(selection.x1);
         $input_y.val(selection.y1);
         $input_w.val(selection.width);
@@ -189,34 +185,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
     readFile(evt.target.files[0])
 
   saveCrop = () ->
-    $input_url.val($sourceIm.attr('src'))
-    r = $sourceIm.attr('data-original-width') / $sourceIm.width()
-    $input_x.val($input_x.val() * r);
-    $input_y.val($input_y.val() * r);
-    $input_w.val($input_w.val() * r);
-    $input_h.val($input_h.val() * r);
-    context = $cropSandbox.get(0).getContext('2d')
-
-    scaleX = settings.width / ($input_w.val() || 1);
-    scaleY = settings.height / ($input_h.val() || 1);
-
-    sourceX = $input_x.val()
-    sourceY = $input_y.val()
-    sourceWidth =$input_w.val() 
-    sourceHeight =$input_h.val() 
-    destWidth = settings.width;
-    destHeight = settings.height;
-    destX = 0;
-    destY = 0;
-
-    console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
-
-    #    w = Math.round(scaleX * $(img).width()) + 'px',
-    #    h = Math.round(scaleY * $(img).height()) + 'px',
-    #    x = Math.round(100/selection.width * selection.x1) + 'px'
-    #    y = Math.round(100/selection.height * selection.y1) + 'px'
- 
-    context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
     cleanImages()
 
   # Setup the listeners

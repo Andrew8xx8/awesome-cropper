@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $previewIm, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
+    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $input_h, $input_url, $input_w, $input_x, $input_y, $progressBar, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, generateImputName, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
     settings = {
       width: 100,
       height: 100,
@@ -60,22 +60,13 @@
     $container.append(div().addClass('control-group form-inline').append($urlSelect).append($urlSelectButton));
     $progressBar = div().addClass('progress progress-striped active hide').append(div().addClass('bar').css('width', '100%'));
     $container.append($progressBar);
-    $previewIm = image().css({
-      width: settings.width + "px",
-      height: settings.height + "px",
-      'max-width': 'none'
-    });
     $sourceIm = image();
     $applyButton = a('Apply').addClass('btn btn-primary');
     $cancelButton = a('Cancel').addClass('btn').attr({
       'data-dismiss': "modal",
       'aria-hidden': "true"
     });
-    $imagesContainer = div().append(div().addClass('modal-body row-fluid').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').css({
-      width: settings.width + "px",
-      height: settings.height + "px",
-      overflow: 'hidden'
-    }).append($previewIm))).append(div().addClass('modal-footer').append($cancelButton).append($applyButton)).addClass('modal hide fade').attr({
+    $imagesContainer = div().append(div().addClass('modal-body row-fluid').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').append($cropSandbox))).append(div().addClass('modal-footer').append($cancelButton).append($applyButton)).addClass('modal hide fade').attr({
       role: 'dialog'
     });
     $container.append($imagesContainer);
@@ -100,7 +91,6 @@
       return tempImage.src = img.attr('src');
     };
     setImages = function(uri) {
-      $previewIm.attr('src', uri);
       $sourceIm.attr('src', uri).load(function() {
         setOriginalSize($sourceIm);
         return removeLoading();
@@ -108,7 +98,6 @@
       return setAreaSelect($sourceIm);
     };
     cleanImages = function() {
-      $previewIm.attr('src', '');
       return $sourceIm.attr('src', '');
     };
     setAreaSelect = function(image) {
@@ -116,18 +105,21 @@
       return image.imgAreaSelect({
         aspectRatio: '1:1',
         handles: true,
-        onSelectChange: function(img, selection) {
-          var scaleX, scaleY;
-          scaleX = settings.width / (selection.width || 1);
-          scaleY = settings.height / (selection.height || 1);
-          return $previewIm.css({
-            width: Math.round(scaleX * $(img).width()) + 'px',
-            height: Math.round(scaleY * $(img).height()) + 'px',
-            marginLeft: '-' + Math.round(100 / selection.width * selection.x1) + 'px',
-            marginTop: '-' + Math.round(100 / selection.height * selection.y1) + 'px'
-          });
-        },
         onSelectEnd: function(img, selection) {
+          var context, destHeight, destWidth, destX, destY, r, sourceHeight, sourceWidth, sourceX, sourceY;
+          r = $sourceIm.attr('data-original-width') / $sourceIm.width();
+          console.log(r);
+          context = $cropSandbox.get(0).getContext('2d');
+          sourceX = Math.round(selection.x1 * r);
+          sourceY = Math.round(selection.y1 * r);
+          sourceWidth = Math.round(selection.width * r);
+          sourceHeight = Math.round(selection.height * r);
+          destX = 0;
+          destY = 0;
+          destWidth = settings.width;
+          destHeight = settings.height;
+          console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+          context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
           $input_x.val(selection.x1);
           $input_y.val(selection.y1);
           $input_w.val(selection.width);
@@ -163,26 +155,6 @@
       return readFile(evt.target.files[0]);
     };
     saveCrop = function() {
-      var context, destHeight, destWidth, destX, destY, r, scaleX, scaleY, sourceHeight, sourceWidth, sourceX, sourceY;
-      $input_url.val($sourceIm.attr('src'));
-      r = $sourceIm.attr('data-original-width') / $sourceIm.width();
-      $input_x.val($input_x.val() * r);
-      $input_y.val($input_y.val() * r);
-      $input_w.val($input_w.val() * r);
-      $input_h.val($input_h.val() * r);
-      context = $cropSandbox.get(0).getContext('2d');
-      scaleX = settings.width / ($input_w.val() || 1);
-      scaleY = settings.height / ($input_h.val() || 1);
-      sourceX = $input_x.val();
-      sourceY = $input_y.val();
-      sourceWidth = $input_w.val();
-      sourceHeight = $input_h.val();
-      destWidth = settings.width;
-      destHeight = settings.height;
-      destX = 0;
-      destY = 0;
-      console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-      context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
       return cleanImages();
     };
     $fileSelect.bind('change', handleFileSelect);
