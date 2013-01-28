@@ -47,14 +47,14 @@
     $input_h = input('hidden').attr('name', generateImputName('h'));
     $container.append($input_url).append($input_x).append($input_y).append($input_w).append($input_h);
     $fileSelect = input('file');
-    $container.append(div().addClass('span12 control-group').append($fileSelect));
+    $container.append(div().addClass('control-group').append($fileSelect));
     $urlSelect = input('text');
     $urlSelectButton = input('button');
     $urlSelectButton.val('Upload from url');
-    $container.append(div().addClass('span4 control-group').append($urlSelect)).append(div().addClass('span7 control-group').append($urlSelectButton));
+    $container.append(div().addClass('control-group form-inline').append($urlSelect).append($urlSelectButton));
     $dropArea = div().html('or Drop file here');
     $dropArea.addClass('awesome-cropper-drop-area well');
-    $container.append(div().addClass('span12 control-group').append($dropArea));
+    $container.append($dropArea);
     $progressBar = div().addClass('progress progress-striped active hide').append(div().addClass('bar').css('width', '100%'));
     $container.append($progressBar);
     $previewIm = image().css({
@@ -68,7 +68,7 @@
       'data-dismiss': "modal",
       'aria-hidden': "true"
     });
-    $imagesContainer = div().append(div().addClass('modal-body').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').css({
+    $imagesContainer = div().append(div().addClass('modal-body row-fluid').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').css({
       width: settings.width + "px",
       height: settings.height + "px",
       overflow: 'hidden'

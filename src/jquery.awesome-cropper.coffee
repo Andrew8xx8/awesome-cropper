@@ -52,7 +52,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
   # File chooser
   $fileSelect = input('file')
   $container.append(
-    div().addClass('span12 control-group')
+    div().addClass('control-group')
       .append($fileSelect)
   )
 
@@ -62,10 +62,8 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $urlSelectButton.val('Upload from url')
 
   $container.append(
-    div().addClass('span4 control-group')
+    div().addClass('control-group form-inline')
       .append($urlSelect)
-  ).append(
-    div().addClass('span7 control-group')
       .append($urlSelectButton)
   )
 
@@ -73,8 +71,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $dropArea = div().html('or Drop file here')
   $dropArea.addClass('awesome-cropper-drop-area well')
   $container.append(
-    div().addClass('span12 control-group')
-    .append($dropArea)
+    $dropArea
   )
 
   # Progress bar
@@ -97,7 +94,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
     'aria-hidden': "true"
 
   $imagesContainer = div().append(
-    div().addClass('modal-body').append(
+    div().addClass('modal-body row-fluid').append(
       div().addClass('span9')
         .append($sourceIm)
     ).append(
