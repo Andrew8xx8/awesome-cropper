@@ -170,6 +170,9 @@
     $container.bind('dragover', handleDragOver);
     $container.bind('drop', handleDropFileSelect);
     $urlSelectButton.click(function() {
+      if (!$urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)) {
+        return;
+      }
       setLoading();
       return setImages($urlSelect.val());
     });

@@ -156,7 +156,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
     image.imgAreaSelect
       remove: true
 
-
   # Plugin images loading function
   readFile = (file) ->
     reader = new FileReader()
@@ -196,8 +195,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $container.bind('dragover', handleDragOver)
   $container.bind('drop', handleDropFileSelect)
   $urlSelectButton.click ->
+    return unless $urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)
     setLoading()
     setImages($urlSelect.val())
+
   $cancelButton.click ->
     removeAreaSelect($sourceIm)
   $applyButton.click ->
