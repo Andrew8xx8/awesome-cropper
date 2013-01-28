@@ -153,6 +153,20 @@ $.awesomeCropper = (inputAttachTo, options) ->
     image.imgAreaSelect
       remove: true
 
+  fixSize = (img) ->
+    tempImage = new Image()
+    width = 0
+
+    tempImage.onload = () ->  
+      width = tempImage.width
+      r = width / img.width()
+      $input_x.val($input_x.val() * r);
+      $input_y.val($input_y.val() * r);
+      $input_w.val($input_w.val() * r);
+      $input_h.val($input_h.val() * r);
+
+    tempImage.src = img.attr('src')
+
   # Plugin images loading function
   readFile = (file) ->
     reader = new FileReader()
@@ -181,9 +195,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   saveCrop = () ->
     $input_url.val($sourceIm.attr('src'))
+    fixSize($sourceIm)
     cleanImages()
 
-  # Setup the dnd listeners.
+  # Setup the listeners
   $fileSelect.bind('change', handleFileSelect)
   $dropArea.bind('dragover', handleDragOver)
   $dropArea.bind('drop', handleDropFileSelect)
