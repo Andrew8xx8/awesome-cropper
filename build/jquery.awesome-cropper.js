@@ -49,7 +49,7 @@
       'max-width': 'none'
     });
     $sourceIm = image();
-    $imagesContainer = row().append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3').css({
+    $imagesContainer = row().append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').css({
       width: settings.width + "px",
       height: settings.height + "px",
       overflow: 'hidden'

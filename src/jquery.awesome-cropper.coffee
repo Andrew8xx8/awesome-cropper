@@ -86,7 +86,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
     div().addClass('span9')
       .append($sourceIm)
   ).append(
-    div().addClass('span3').css
+    div().addClass('span3 preview').css
       width: settings.width + "px"
       height: settings.height + "px"
       overflow: 'hidden'
