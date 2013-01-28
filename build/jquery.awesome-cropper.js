@@ -183,6 +183,15 @@
     });
   };
 
+  /*
+  # jQuery Awesome Cropper plugin
+  #
+  # Copyright 2013 8xx8, vdv73rus
+  #
+  # v0.0.2
+  */
+
+
   $.fn.extend({
     awesomeCropper: function(options) {
       return this.each(function() {

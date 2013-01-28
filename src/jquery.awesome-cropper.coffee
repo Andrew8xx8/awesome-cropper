@@ -211,7 +211,13 @@ $.awesomeCropper = (inputAttachTo, options) ->
     removeAreaSelect($sourceIm)
 
 
-# Adds plugin object to jQuery
+###
+# jQuery Awesome Cropper plugin
+#
+# Copyright 2013 8xx8, vdv73rus
+#
+# v0.0.2
+####
 $.fn.extend
   awesomeCropper: (options) ->
     return @each ()->
