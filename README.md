@@ -30,12 +30,16 @@ Create cropping component on some hidden input:
   <script>
   $(document).ready(function () {
       $('#sample_input').awesomeCropper(
-        { maxWidth: 200, maxHeight: 150, handles: true }
+        { width: 200, height: 200 }
       );
   });
   </script>
 ```
 
+## Options
+
+`width`: Width of cropped image
+`height`: Height of cropped image
 Hidden input may looks like this:
 ```html
   <input id="sample_input" type="hidden" name="test[image]">
