@@ -47,16 +47,18 @@ $.awesomeCropper = (inputAttachTo, options) ->
       .append($fileSelect)
   )
 
-  # URL input
-  $urlSelect = input('text')
-  $urlSelectButton = input('button')
-  $urlSelectButton.val('Upload from url')
+  if (settings.proxy_path != undefined)
+    console.log(settings.proxy_path)
+    # URL input
+    $urlSelect = input('text')
+    $urlSelectButton = input('button')
+    $urlSelectButton.val('Upload from url')
 
-  $container.append(
-    div().addClass('control-group form-inline')
-      .append($urlSelect)
-      .append($urlSelectButton)
-  )
+    $container.append(
+      div().addClass('control-group form-inline')
+        .append($urlSelect)
+        .append($urlSelectButton)
+    )
 
   # Progress bar
   $progressBar = div().addClass('progress progress-striped active hide').append(
@@ -83,8 +85,8 @@ $.awesomeCropper = (inputAttachTo, options) ->
       div().addClass('span3 preview')
       .append($cropSandbox)
     )
-  ).append(
     div().addClass('modal-footer').append($cancelButton).append($applyButton)
+  ).append(
   ).addClass('modal hide fade').attr
     role: 'dialog'
   $container.append($imagesContainer)
@@ -92,7 +94,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
   # Plugin UI functions
   setLoading = () ->
     $progressBar.removeClass('hide')
- 
+
   removeLoading = () ->
     $imagesContainer.modal()
     $progressBar.addClass('hide')
@@ -111,6 +113,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
   setImages = (uri) ->
     $sourceIm.attr('src', uri).load ->
       setOriginalSize($sourceIm)
+      $sourceIm.get(0).crossOrigin = ''
       removeLoading()
     setAreaSelect($sourceIm)
 
@@ -122,6 +125,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       aspectRatio: '1:1' 
       handles: true 
       onSelectEnd: (img, selection) =>
+        $sourceIm.crossOrigin = ''
         r = $sourceIm.attr('data-original-width') / $sourceIm.width()
         console.log(r)
         context = $cropSandbox.get(0).getContext('2d')
@@ -130,13 +134,13 @@ $.awesomeCropper = (inputAttachTo, options) ->
         sourceY = Math.round(selection.y1 * r)
         sourceWidth = Math.round(selection.width * r)
         sourceHeight = Math.round(selection.height * r)
-        destX = 0;
-        destY = 0;
+        destX = 0
+        destY = 0
         destWidth = settings.width;
         destHeight = settings.height;
 
         console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
-     
+
         context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
 
   removeAreaSelect = (image) ->
@@ -178,10 +182,13 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $fileSelect.bind('change', handleFileSelect)
   $container.bind('dragover', handleDragOver)
   $container.bind('drop', handleDropFileSelect)
-  $urlSelectButton.click ->
-    return unless $urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)
-    setLoading()
-    setImages($urlSelect.val())
+
+  if (settings.proxy_path != undefined)
+    $urlSelectButton.click ->
+      return unless $urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)
+      url = settings.proxy_path.replace /:url/, $urlSelect.val()
+      setLoading()
+      setImages(url)
 
   $cancelButton.click ->
     removeAreaSelect($sourceIm)

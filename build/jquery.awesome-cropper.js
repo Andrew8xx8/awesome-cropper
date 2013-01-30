@@ -39,10 +39,13 @@
     $container.append($cropSandbox);
     $fileSelect = input('file');
     $container.append(div().addClass('control-group').append($fileSelect));
-    $urlSelect = input('text');
-    $urlSelectButton = input('button');
-    $urlSelectButton.val('Upload from url');
-    $container.append(div().addClass('control-group form-inline').append($urlSelect).append($urlSelectButton));
+    if (settings.proxy_path !== void 0) {
+      console.log(settings.proxy_path);
+      $urlSelect = input('text');
+      $urlSelectButton = input('button');
+      $urlSelectButton.val('Upload from url');
+      $container.append(div().addClass('control-group form-inline').append($urlSelect).append($urlSelectButton));
+    }
     $progressBar = div().addClass('progress progress-striped active hide').append(div().addClass('bar').css('width', '100%'));
     $container.append($progressBar);
     $resultIm = image();
@@ -53,7 +56,7 @@
       'data-dismiss': "modal",
       'aria-hidden': "true"
     });
-    $imagesContainer = div().append(div().addClass('modal-body row-fluid').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').append($cropSandbox))).append(div().addClass('modal-footer').append($cancelButton).append($applyButton)).addClass('modal hide fade').attr({
+    $imagesContainer = div().append(div().addClass('modal-body row-fluid').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').append($cropSandbox)), div().addClass('modal-footer').append($cancelButton).append($applyButton)).append().addClass('modal hide fade').attr({
       role: 'dialog'
     });
     $container.append($imagesContainer);
@@ -80,6 +83,7 @@
     setImages = function(uri) {
       $sourceIm.attr('src', uri).load(function() {
         setOriginalSize($sourceIm);
+        $sourceIm.get(0).crossOrigin = '';
         return removeLoading();
       });
       return setAreaSelect($sourceIm);
@@ -94,6 +98,7 @@
         handles: true,
         onSelectEnd: function(img, selection) {
           var context, destHeight, destWidth, destX, destY, r, sourceHeight, sourceWidth, sourceX, sourceY;
+          $sourceIm.crossOrigin = '';
           r = $sourceIm.attr('data-original-width') / $sourceIm.width();
           console.log(r);
           context = $cropSandbox.get(0).getContext('2d');
@@ -147,13 +152,17 @@
     $fileSelect.bind('change', handleFileSelect);
     $container.bind('dragover', handleDragOver);
     $container.bind('drop', handleDropFileSelect);
-    $urlSelectButton.click(function() {
-      if (!$urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)) {
-        return;
-      }
-      setLoading();
-      return setImages($urlSelect.val());
-    });
+    if (settings.proxy_path !== void 0) {
+      $urlSelectButton.click(function() {
+        var url;
+        if (!$urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)) {
+          return;
+        }
+        url = settings.proxy_path.replace(/:url/, $urlSelect.val());
+        setLoading();
+        return setImages(url);
+      });
+    }
     $cancelButton.click(function() {
       return removeAreaSelect($sourceIm);
     });
