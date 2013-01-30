@@ -82,7 +82,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       div().addClass('span9')
         .append($sourceIm)
     ).append(
-      div().addClass('span3 preview')
+      div().addClass('span3')
       .append($cropSandbox)
     )
     div().addClass('modal-footer').append($cancelButton).append($applyButton)

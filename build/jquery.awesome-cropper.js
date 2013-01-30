@@ -56,7 +56,7 @@
       'data-dismiss': "modal",
       'aria-hidden': "true"
     });
-    $imagesContainer = div().append(div().addClass('modal-body row-fluid').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3 preview').append($cropSandbox)), div().addClass('modal-footer').append($cancelButton).append($applyButton)).append().addClass('modal hide fade').attr({
+    $imagesContainer = div().append(div().addClass('modal-body row-fluid').append(div().addClass('span9').append($sourceIm)).append(div().addClass('span3').append($cropSandbox)), div().addClass('modal-footer').append($cancelButton).append($applyButton)).append().addClass('modal hide fade').attr({
       role: 'dialog'
     });
     $container.append($imagesContainer);
