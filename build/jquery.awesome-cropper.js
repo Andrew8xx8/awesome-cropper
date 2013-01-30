@@ -158,9 +158,11 @@
         if (!$urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)) {
           return;
         }
-        url = settings.proxy_path.replace(/:url/, $urlSelect.val());
         setLoading();
-        return setImages(url);
+        url = settings.proxy_path.replace(/:url/, $urlSelect.val());
+        return $.get(url).done(function(data) {
+          return setImages(data);
+        });
       });
     }
     $cancelButton.click(function() {

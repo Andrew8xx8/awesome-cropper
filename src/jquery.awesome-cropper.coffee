@@ -186,9 +186,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
   if (settings.proxy_path != undefined)
     $urlSelectButton.click ->
       return unless $urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)
-      url = settings.proxy_path.replace /:url/, $urlSelect.val()
       setLoading()
-      setImages(url)
+      url = settings.proxy_path.replace /:url/, $urlSelect.val()
+      $.get(url).done (data) ->
+        setImages(data)
 
   $cancelButton.click ->
     removeAreaSelect($sourceIm)
