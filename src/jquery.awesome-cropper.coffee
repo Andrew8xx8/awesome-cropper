@@ -91,12 +91,22 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $container.append($imagesContainer)
 
   # Plugin UI functions
+  removeAreaSelect = (image) ->
+    image.imgAreaSelect
+      remove: true
+
+  cleanImages = () ->
+    $sourceIm.attr('src', '')
+
   setLoading = () ->
     $progressBar.removeClass('hide')
 
   removeLoading = () ->
     $imagesContainer.modal().on('shown', () ->
       setAreaSelect($sourceIm)
+    ).on('hidden', () ->
+      cleanImages()
+      removeAreaSelect($sourceIm)
     )
     $progressBar.addClass('hide')
 
@@ -116,20 +126,27 @@ $.awesomeCropper = (inputAttachTo, options) ->
       removeLoading()
       setOriginalSize($sourceIm)
 
-  cleanImages = () ->
-    $sourceIm.attr('src', '')
-
   drawImage = (img, x, y, width, height) ->
-    r = img.attr('data-original-width') / img.width()
+    oWidth = img.attr('data-original-width')
+    oHeight = img.attr('data-original-height')
+
+    console.log(width, height)
+    if oWidth > oHeight
+      r = img.attr('data-original-height') / img.height()
+    else
+      r = img.attr('data-original-width') / img.width()
 
     sourceX = Math.round(x * r)
     sourceY = Math.round(y * r)
-    sourceWidth = Math.round(width * r)
+    sourceWidth = Math.round(width  * r)
     sourceHeight = Math.round(height * r)
     destX = 0
     destY = 0
     destWidth = settings.width
     destHeight = settings.height
+
+    console.log(sourceWidth, sourceHeight)
+    console.log(img.attr('data-original-height'), img.attr('data-original-width'))
 
     context = $cropSandbox.get(0).getContext('2d')
     context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
@@ -153,10 +170,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
       y2: y2
       onSelectEnd: (img, selection) =>
         drawImage($sourceIm, selection.x1, selection.y1, selection.width, selection.height)
-
-  removeAreaSelect = (image) ->
-    image.imgAreaSelect
-      remove: true
 
   # Plugin images loading function
   readFile = (file) ->

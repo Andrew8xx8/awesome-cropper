@@ -59,12 +59,23 @@
       role: 'dialog'
     });
     $container.append($imagesContainer);
+    removeAreaSelect = function(image) {
+      return image.imgAreaSelect({
+        remove: true
+      });
+    };
+    cleanImages = function() {
+      return $sourceIm.attr('src', '');
+    };
     setLoading = function() {
       return $progressBar.removeClass('hide');
     };
     removeLoading = function() {
       $imagesContainer.modal().on('shown', function() {
         return setAreaSelect($sourceIm);
+      }).on('hidden', function() {
+        cleanImages();
+        return removeAreaSelect($sourceIm);
       });
       return $progressBar.addClass('hide');
     };
@@ -87,12 +98,16 @@
         return setOriginalSize($sourceIm);
       });
     };
-    cleanImages = function() {
-      return $sourceIm.attr('src', '');
-    };
     drawImage = function(img, x, y, width, height) {
-      var context, destHeight, destWidth, destX, destY, r, sourceHeight, sourceWidth, sourceX, sourceY;
-      r = img.attr('data-original-width') / img.width();
+      var context, destHeight, destWidth, destX, destY, oHeight, oWidth, r, sourceHeight, sourceWidth, sourceX, sourceY;
+      oWidth = img.attr('data-original-width');
+      oHeight = img.attr('data-original-height');
+      console.log(width, height);
+      if (oWidth > oHeight) {
+        r = img.attr('data-original-height') / img.height();
+      } else {
+        r = img.attr('data-original-width') / img.width();
+      }
       sourceX = Math.round(x * r);
       sourceY = Math.round(y * r);
       sourceWidth = Math.round(width * r);
@@ -101,6 +116,8 @@
       destY = 0;
       destWidth = settings.width;
       destHeight = settings.height;
+      console.log(sourceWidth, sourceHeight);
+      console.log(img.attr('data-original-height'), img.attr('data-original-width'));
       context = $cropSandbox.get(0).getContext('2d');
       return context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
     };
@@ -125,11 +142,6 @@
         onSelectEnd: function(img, selection) {
           return drawImage($sourceIm, selection.x1, selection.y1, selection.width, selection.height);
         }
-      });
-    };
-    removeAreaSelect = function(image) {
-      return image.imgAreaSelect({
-        remove: true
       });
     };
     readFile = function(file) {
