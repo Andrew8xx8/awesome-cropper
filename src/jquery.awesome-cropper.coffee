@@ -169,9 +169,17 @@ $.awesomeCropper = (inputAttachTo, options) ->
       x2: x2
       y2: y2
       onSelectEnd: (img, selection) =>
-        drawImage($sourceIm, selection.x1, selection.y1, selection.width, selection.height)
+        drawImage($sourceIm, selection.x1, selection.y1, selection.width - 1, selection.height - 1)
 
   # Plugin images loading function
+  fileAllowed = (name) ->
+    res = name.match /\.(jpg|png|gif|jpeg)$/mi
+    if !res
+      alert('Only *.jpeg, *.jpg, *.png, *.gif files allowed')
+      false
+    else
+      true
+
   readFile = (file) ->
     reader = new FileReader()
 
@@ -186,7 +194,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
     evt.stopPropagation()
     evt.preventDefault()
 
-    readFile(evt.originalEvent.dataTransfer.files[0])
+    if evt.originalEvent.dataTransfer.files[0] != undefined
+      return unless fileAllowed(evt.originalEvent.dataTransfer.files[0].name)
+
+      readFile(evt.originalEvent.dataTransfer.files[0])
 
   handleDragOver = (e) ->
     e.originalEvent.dataTransfer.dropEffect = "copy"
@@ -194,7 +205,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
     e.preventDefault()
 
   handleFileSelect = (evt) ->
-    readFile(evt.target.files[0])
+    if evt.target.files[0] != undefined
+      return unless fileAllowed(evt.target.files[0].name)
+
+      readFile(evt.target.files[0])
 
   saveCrop = () ->
     result = $cropSandbox.get(0).toDataURL()
@@ -206,14 +220,21 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $fileSelect.bind('change', handleFileSelect)
   $container.bind('dragover', handleDragOver)
   $container.bind('drop', handleDropFileSelect)
+  $urlSelect.bind('dragover', handleDragOver)
+  $urlSelect.bind('drop', handleDropFileSelect)
 
   if (settings.proxy_path != undefined)
     $urlSelectButton.click ->
       return unless $urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)
+      return unless fileAllowed($urlSelect.val())
+
       setLoading()
       url = settings.proxy_path.replace /:url/, $urlSelect.val()
       $.get(url).done (data) ->
         setImages(data)
+      .fail (jqXNR, textStatus) ->
+        $progressBar.addClass('hide')
+        alert("Failed to load image")
 
   $cancelButton.click ->
     removeAreaSelect($sourceIm)

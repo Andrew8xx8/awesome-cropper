@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $progressBar, $resultIm, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, drawImage, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
+    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $progressBar, $resultIm, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, drawImage, fileAllowed, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
     settings = {
       width: 100,
       height: 100,
@@ -140,9 +140,19 @@
         x2: x2,
         y2: y2,
         onSelectEnd: function(img, selection) {
-          return drawImage($sourceIm, selection.x1, selection.y1, selection.width, selection.height);
+          return drawImage($sourceIm, selection.x1, selection.y1, selection.width - 1, selection.height - 1);
         }
       });
+    };
+    fileAllowed = function(name) {
+      var res;
+      res = name.match(/\.(jpg|png|gif|jpeg)$/mi);
+      if (!res) {
+        alert('Only *.jpeg, *.jpg, *.png, *.gif files allowed');
+        return false;
+      } else {
+        return true;
+      }
     };
     readFile = function(file) {
       var reader;
@@ -156,7 +166,12 @@
     handleDropFileSelect = function(evt) {
       evt.stopPropagation();
       evt.preventDefault();
-      return readFile(evt.originalEvent.dataTransfer.files[0]);
+      if (evt.originalEvent.dataTransfer.files[0] !== void 0) {
+        if (!fileAllowed(evt.originalEvent.dataTransfer.files[0].name)) {
+          return;
+        }
+        return readFile(evt.originalEvent.dataTransfer.files[0]);
+      }
     };
     handleDragOver = function(e) {
       e.originalEvent.dataTransfer.dropEffect = "copy";
@@ -164,7 +179,12 @@
       return e.preventDefault();
     };
     handleFileSelect = function(evt) {
-      return readFile(evt.target.files[0]);
+      if (evt.target.files[0] !== void 0) {
+        if (!fileAllowed(evt.target.files[0].name)) {
+          return;
+        }
+        return readFile(evt.target.files[0]);
+      }
     };
     saveCrop = function() {
       var result;
@@ -176,16 +196,24 @@
     $fileSelect.bind('change', handleFileSelect);
     $container.bind('dragover', handleDragOver);
     $container.bind('drop', handleDropFileSelect);
+    $urlSelect.bind('dragover', handleDragOver);
+    $urlSelect.bind('drop', handleDropFileSelect);
     if (settings.proxy_path !== void 0) {
       $urlSelectButton.click(function() {
         var url;
         if (!$urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)) {
           return;
         }
+        if (!fileAllowed($urlSelect.val())) {
+          return;
+        }
         setLoading();
         url = settings.proxy_path.replace(/:url/, $urlSelect.val());
         return $.get(url).done(function(data) {
           return setImages(data);
+        }).fail(function(jqXNR, textStatus) {
+          $progressBar.addClass('hide');
+          return alert("Failed to load image");
         });
       });
     }
