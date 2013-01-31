@@ -113,7 +113,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
   setImages = (uri) ->
     $sourceIm.attr('src', uri).load ->
       setOriginalSize($sourceIm)
-      $sourceIm.get(0).crossOrigin = ''
       removeLoading()
     setAreaSelect($sourceIm)
 
@@ -125,7 +124,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
       aspectRatio: '1:1' 
       handles: true 
       onSelectEnd: (img, selection) =>
-        $sourceIm.crossOrigin = ''
         r = $sourceIm.attr('data-original-width') / $sourceIm.width()
         console.log(r)
         context = $cropSandbox.get(0).getContext('2d')

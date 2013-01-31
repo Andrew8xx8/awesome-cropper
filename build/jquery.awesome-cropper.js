@@ -83,7 +83,6 @@
     setImages = function(uri) {
       $sourceIm.attr('src', uri).load(function() {
         setOriginalSize($sourceIm);
-        $sourceIm.get(0).crossOrigin = '';
         return removeLoading();
       });
       return setAreaSelect($sourceIm);
@@ -98,7 +97,6 @@
         handles: true,
         onSelectEnd: function(img, selection) {
           var context, destHeight, destWidth, destX, destY, r, sourceHeight, sourceWidth, sourceX, sourceY;
-          $sourceIm.crossOrigin = '';
           r = $sourceIm.attr('data-original-width') / $sourceIm.width();
           console.log(r);
           context = $cropSandbox.get(0).getContext('2d');
