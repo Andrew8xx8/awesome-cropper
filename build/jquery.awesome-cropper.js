@@ -5,7 +5,7 @@
   $ = jQuery;
 
   $.awesomeCropper = function(inputAttachTo, options) {
-    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $progressBar, $resultIm, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
+    var $applyButton, $cancelButton, $container, $cropSandbox, $fileSelect, $imagesContainer, $inputAttachTo, $progressBar, $resultIm, $sourceIm, $urlSelect, $urlSelectButton, a, cleanImages, div, drawImage, handleDragOver, handleDropFileSelect, handleFileSelect, image, input, log, readFile, removeAreaSelect, removeLoading, saveCrop, setAreaSelect, setImages, setLoading, setOriginalSize, settings;
     settings = {
       width: 100,
       height: 100,
@@ -40,7 +40,6 @@
     $fileSelect = input('file');
     $container.append(div().addClass('control-group').append($fileSelect));
     if (settings.proxy_path !== void 0) {
-      console.log(settings.proxy_path);
       $urlSelect = input('text');
       $urlSelectButton = input('button');
       $urlSelectButton.val('Upload from url');
@@ -64,7 +63,9 @@
       return $progressBar.removeClass('hide');
     };
     removeLoading = function() {
-      $imagesContainer.modal();
+      $imagesContainer.modal().on('shown', function() {
+        return setAreaSelect($sourceIm);
+      });
       return $progressBar.addClass('hide');
     };
     setOriginalSize = function(img) {
@@ -81,35 +82,48 @@
       return tempImage.src = img.attr('src');
     };
     setImages = function(uri) {
-      $sourceIm.attr('src', uri).load(function() {
-        setOriginalSize($sourceIm);
-        return removeLoading();
+      return $sourceIm.attr('src', uri).load(function() {
+        removeLoading();
+        return setOriginalSize($sourceIm);
       });
-      return setAreaSelect($sourceIm);
     };
     cleanImages = function() {
       return $sourceIm.attr('src', '');
     };
+    drawImage = function(img, x, y, width, height) {
+      var context, destHeight, destWidth, destX, destY, r, sourceHeight, sourceWidth, sourceX, sourceY;
+      r = img.attr('data-original-width') / img.width();
+      sourceX = Math.round(x * r);
+      sourceY = Math.round(y * r);
+      sourceWidth = Math.round(width * r);
+      sourceHeight = Math.round(height * r);
+      destX = 0;
+      destY = 0;
+      destWidth = settings.width;
+      destHeight = settings.height;
+      context = $cropSandbox.get(0).getContext('2d');
+      return context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+    };
     setAreaSelect = function(image) {
-      var _this = this;
+      var x2, y2,
+        _this = this;
+      if (image.width() > image.height()) {
+        y2 = image.height();
+        x2 = image.height();
+      } else {
+        x2 = image.width();
+        y2 = image.width();
+      }
+      drawImage($sourceIm, 0, 0, x2, y2);
       return image.imgAreaSelect({
         aspectRatio: '1:1',
         handles: true,
+        x1: 0,
+        y1: 0,
+        x2: x2,
+        y2: y2,
         onSelectEnd: function(img, selection) {
-          var context, destHeight, destWidth, destX, destY, r, sourceHeight, sourceWidth, sourceX, sourceY;
-          r = $sourceIm.attr('data-original-width') / $sourceIm.width();
-          console.log(r);
-          context = $cropSandbox.get(0).getContext('2d');
-          sourceX = Math.round(selection.x1 * r);
-          sourceY = Math.round(selection.y1 * r);
-          sourceWidth = Math.round(selection.width * r);
-          sourceHeight = Math.round(selection.height * r);
-          destX = 0;
-          destY = 0;
-          destWidth = settings.width;
-          destHeight = settings.height;
-          console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-          return context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+          return drawImage($sourceIm, selection.x1, selection.y1, selection.width, selection.height);
         }
       });
     };

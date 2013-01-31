@@ -48,7 +48,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
   )
 
   if (settings.proxy_path != undefined)
-    console.log(settings.proxy_path)
     # URL input
     $urlSelect = input('text')
     $urlSelectButton = input('button')
@@ -96,13 +95,15 @@ $.awesomeCropper = (inputAttachTo, options) ->
     $progressBar.removeClass('hide')
 
   removeLoading = () ->
-    $imagesContainer.modal()
+    $imagesContainer.modal().on('shown', () ->
+      setAreaSelect($sourceIm)
+    )
     $progressBar.addClass('hide')
 
   setOriginalSize = (img) ->
     tempImage = new Image()
 
-    tempImage.onload = () ->  
+    tempImage.onload = () ->
       width = tempImage.width
       img.attr
         'data-original-width': tempImage.width
@@ -112,34 +113,46 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   setImages = (uri) ->
     $sourceIm.attr('src', uri).load ->
-      setOriginalSize($sourceIm)
       removeLoading()
-    setAreaSelect($sourceIm)
+      setOriginalSize($sourceIm)
 
   cleanImages = () ->
     $sourceIm.attr('src', '')
 
+  drawImage = (img, x, y, width, height) ->
+    r = img.attr('data-original-width') / img.width()
+
+    sourceX = Math.round(x * r)
+    sourceY = Math.round(y * r)
+    sourceWidth = Math.round(width * r)
+    sourceHeight = Math.round(height * r)
+    destX = 0
+    destY = 0
+    destWidth = settings.width
+    destHeight = settings.height
+
+    context = $cropSandbox.get(0).getContext('2d')
+    context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
+
   setAreaSelect = (image) ->
+    if (image.width() > image.height())
+      y2 = image.height()
+      x2 = image.height()
+    else
+      x2 = image.width()
+      y2 = image.width()
+
+    drawImage($sourceIm, 0, 0, x2, y2)
+
     image.imgAreaSelect
-      aspectRatio: '1:1' 
-      handles: true 
+      aspectRatio: '1:1'
+      handles: true
+      x1: 0
+      y1: 0
+      x2: x2
+      y2: y2
       onSelectEnd: (img, selection) =>
-        r = $sourceIm.attr('data-original-width') / $sourceIm.width()
-        console.log(r)
-        context = $cropSandbox.get(0).getContext('2d')
-
-        sourceX = Math.round(selection.x1 * r)
-        sourceY = Math.round(selection.y1 * r)
-        sourceWidth = Math.round(selection.width * r)
-        sourceHeight = Math.round(selection.height * r)
-        destX = 0
-        destY = 0
-        destWidth = settings.width;
-        destHeight = settings.height;
-
-        console.log(sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
-
-        context.drawImage($sourceIm.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
+        drawImage($sourceIm, selection.x1, selection.y1, selection.width, selection.height)
 
   removeAreaSelect = (image) ->
     image.imgAreaSelect
