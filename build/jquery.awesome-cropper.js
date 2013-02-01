@@ -102,11 +102,10 @@
       var context, destHeight, destWidth, destX, destY, oHeight, oWidth, r, sourceHeight, sourceWidth, sourceX, sourceY;
       oWidth = img.attr('data-original-width');
       oHeight = img.attr('data-original-height');
-      console.log(width, height);
       if (oWidth > oHeight) {
-        r = img.attr('data-original-height') / img.height();
+        r = oHeight / img.height();
       } else {
-        r = img.attr('data-original-width') / img.width();
+        r = oWidth / img.width();
       }
       sourceX = Math.round(x * r);
       sourceY = Math.round(y * r);
@@ -116,8 +115,6 @@
       destY = 0;
       destWidth = settings.width;
       destHeight = settings.height;
-      console.log(sourceWidth, sourceHeight);
-      console.log(img.attr('data-original-height'), img.attr('data-original-width'));
       context = $cropSandbox.get(0).getContext('2d');
       return context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
     };
@@ -131,7 +128,7 @@
         x2 = image.width();
         y2 = image.width();
       }
-      drawImage($sourceIm, 0, 0, x2, y2);
+      drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1);
       return image.imgAreaSelect({
         aspectRatio: '1:1',
         handles: true,
