@@ -201,7 +201,7 @@
     if (settings.proxy_path !== void 0) {
       $urlSelectButton.click(function() {
         var url;
-        if (!$urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)) {
+        if (!$urlSelect.val().match(/^(https?:\/\/)?/)) {
           return;
         }
         if (!fileAllowed($urlSelect.val())) {

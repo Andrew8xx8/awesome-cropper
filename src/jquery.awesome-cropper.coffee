@@ -225,7 +225,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   if (settings.proxy_path != undefined)
     $urlSelectButton.click ->
-      return unless $urlSelect.val().match(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)
+      return unless $urlSelect.val().match(/^(https?:\/\/)?/)
       return unless fileAllowed($urlSelect.val())
 
       setLoading()
