@@ -150,15 +150,17 @@ $.awesomeCropper = (inputAttachTo, options) ->
   setAreaSelect = (image) ->
     if (image.width() > image.height())
       y2 = image.height()
-      x2 = image.height()
+      x2 = Math.round(settings.width * (image.height() / settings.height))
     else
       x2 = image.width()
-      y2 = image.width()
+      y2 = Math.round(settings.height * (image.width() / settings.width))
+
+    console.log(x2, y2)
 
     drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1)
 
     image.imgAreaSelect
-      aspectRatio: '1:1'
+      aspectRatio: "#{settings.width}:#{settings.height}"
       handles: true
       x1: 0
       y1: 0
