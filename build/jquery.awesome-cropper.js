@@ -83,8 +83,6 @@
       var tempImage;
       tempImage = new Image();
       tempImage.onload = function() {
-        var width;
-        width = tempImage.width;
         return img.attr({
           'data-original-width': tempImage.width,
           'data-original-height': tempImage.height
@@ -119,16 +117,21 @@
       return context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
     };
     setAreaSelect = function(image) {
-      var x2, y2,
+      var viewPort, x2, y2,
         _this = this;
       if (image.width() > image.height()) {
         y2 = image.height();
         x2 = Math.round(settings.width * (image.height() / settings.height));
       } else {
+        viewPort = $(window).height() - 150;
+        if ($sourceIm.height() > viewPort) {
+          $sourceIm.css({
+            height: viewPort + "px"
+          });
+        }
         x2 = image.width();
         y2 = Math.round(settings.height * (image.width() / settings.width));
       }
-      console.log(x2, y2);
       drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1);
       return image.imgAreaSelect({
         aspectRatio: "" + settings.width + ":" + settings.height,

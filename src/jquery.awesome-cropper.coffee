@@ -102,6 +102,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
     $progressBar.removeClass('hide')
 
   removeLoading = () ->
+
     $imagesContainer.modal().on('shown', () ->
       setAreaSelect($sourceIm)
     ).on('hidden', () ->
@@ -114,7 +115,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
     tempImage = new Image()
 
     tempImage.onload = () ->
-      width = tempImage.width
       img.attr
         'data-original-width': tempImage.width
         'data-original-height': tempImage.height
@@ -152,10 +152,14 @@ $.awesomeCropper = (inputAttachTo, options) ->
       y2 = image.height()
       x2 = Math.round(settings.width * (image.height() / settings.height))
     else
+      viewPort = $(window).height() - 150
+
+      if $sourceIm.height() > viewPort
+        $sourceIm.css
+          height: viewPort + "px"
+
       x2 = image.width()
       y2 = Math.round(settings.height * (image.width() / settings.width))
-
-    console.log(x2, y2)
 
     drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1)
 

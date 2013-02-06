@@ -4,10 +4,11 @@
 }
 .awesome-cropper .preview {
 }
-.awesome-cropper .modal {
+.awesome-cropper .modal, .awesome-cropper .modal.fade.in {
   width: 900px;
   margin-left: -450px;
   margin-right: -480px;
+  top: 3%
 }
 .awesome-cropper .modal-body {
   max-height: none
