@@ -96,7 +96,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
       remove: true
 
   cleanImages = () ->
-    $sourceIm.attr('src', '')
+    removeAreaSelect($sourceIm)
+    im = $sourceIm
+    $sourceIm = image()
+    im.replaceWith($sourceIm)
 
   setLoading = () ->
     $progressBar.removeClass('hide')
@@ -107,7 +110,6 @@ $.awesomeCropper = (inputAttachTo, options) ->
       setAreaSelect($sourceIm)
     ).on('hidden', () ->
       cleanImages()
-      removeAreaSelect($sourceIm)
     )
     $progressBar.addClass('hide')
 
@@ -148,18 +150,22 @@ $.awesomeCropper = (inputAttachTo, options) ->
     context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
 
   setAreaSelect = (image) ->
-    if (image.width() >= image.height())
+    viewPort = $(window).height() - 150
+
+    if $sourceIm.height() > viewPort
+      $sourceIm.css
+        height: viewPort + "px"
+
+    console.log(image.width(), image.height())
+
+    if (image.width() / settings.width >= image.height() / settings.height)
       y2 = image.height()
       x2 = Math.round(settings.width * (image.height() / settings.height))
     else
-      viewPort = $(window).height() - 150
-
-      if $sourceIm.height() > viewPort
-        $sourceIm.css
-          height: viewPort + "px"
-
       x2 = image.width()
       y2 = Math.round(settings.height * (image.width() / settings.width))
+
+    console.log(x2, y2, image.width(), image.height())
 
     drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1)
 
@@ -239,12 +245,11 @@ $.awesomeCropper = (inputAttachTo, options) ->
         alert("Failed to load image")
 
   $cancelButton.click ->
-    removeAreaSelect($sourceIm)
+    cleanImages()
 
   $applyButton.click ->
     saveCrop()
     $imagesContainer.modal('hide')
-    removeAreaSelect($sourceIm)
 
 
 ###

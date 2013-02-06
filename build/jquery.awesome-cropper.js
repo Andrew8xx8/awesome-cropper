@@ -65,7 +65,11 @@
       });
     };
     cleanImages = function() {
-      return $sourceIm.attr('src', '');
+      var im;
+      removeAreaSelect($sourceIm);
+      im = $sourceIm;
+      $sourceIm = image();
+      return im.replaceWith($sourceIm);
     };
     setLoading = function() {
       return $progressBar.removeClass('hide');
@@ -74,8 +78,7 @@
       $imagesContainer.modal().on('shown', function() {
         return setAreaSelect($sourceIm);
       }).on('hidden', function() {
-        cleanImages();
-        return removeAreaSelect($sourceIm);
+        return cleanImages();
       });
       return $progressBar.addClass('hide');
     };
@@ -119,19 +122,21 @@
     setAreaSelect = function(image) {
       var viewPort, x2, y2,
         _this = this;
-      if (image.width() >= image.height()) {
+      viewPort = $(window).height() - 150;
+      if ($sourceIm.height() > viewPort) {
+        $sourceIm.css({
+          height: viewPort + "px"
+        });
+      }
+      console.log(image.width(), image.height());
+      if (image.width() / settings.width >= image.height() / settings.height) {
         y2 = image.height();
         x2 = Math.round(settings.width * (image.height() / settings.height));
       } else {
-        viewPort = $(window).height() - 150;
-        if ($sourceIm.height() > viewPort) {
-          $sourceIm.css({
-            height: viewPort + "px"
-          });
-        }
         x2 = image.width();
         y2 = Math.round(settings.height * (image.width() / settings.width));
       }
+      console.log(x2, y2, image.width(), image.height());
       drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1);
       return image.imgAreaSelect({
         aspectRatio: "" + settings.width + ":" + settings.height,
@@ -219,12 +224,11 @@
       });
     }
     $cancelButton.click(function() {
-      return removeAreaSelect($sourceIm);
+      return cleanImages();
     });
     return $applyButton.click(function() {
       saveCrop();
-      $imagesContainer.modal('hide');
-      return removeAreaSelect($sourceIm);
+      return $imagesContainer.modal('hide');
     });
   };
 
