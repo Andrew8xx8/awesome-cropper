@@ -119,7 +119,7 @@
     setAreaSelect = function(image) {
       var viewPort, x2, y2,
         _this = this;
-      if (image.width() > image.height()) {
+      if (image.width() >= image.height()) {
         y2 = image.height();
         x2 = Math.round(settings.width * (image.height() / settings.height));
       } else {

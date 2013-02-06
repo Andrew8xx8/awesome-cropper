@@ -148,7 +148,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
     context.drawImage(img.get(0), sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight)
 
   setAreaSelect = (image) ->
-    if (image.width() > image.height())
+    if (image.width() >= image.height())
       y2 = image.height()
       x2 = Math.round(settings.width * (image.height() / settings.height))
     else
