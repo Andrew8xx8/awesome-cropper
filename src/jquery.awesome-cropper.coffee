@@ -228,10 +228,11 @@ $.awesomeCropper = (inputAttachTo, options) ->
   $fileSelect.bind('change', handleFileSelect)
   $container.bind('dragover', handleDragOver)
   $container.bind('drop', handleDropFileSelect)
-  $urlSelect.bind('dragover', handleDragOver)
-  $urlSelect.bind('drop', handleDropFileSelect)
 
   if (settings.proxy_path != undefined)
+    $urlSelect.bind('dragover', handleDragOver)
+    $urlSelect.bind('drop', handleDropFileSelect)
+
     $urlSelectButton.click ->
       return unless $urlSelect.val().match(/^(https?:\/\/)?/)
       return unless fileAllowed($urlSelect.val())
