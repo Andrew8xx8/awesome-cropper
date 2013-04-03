@@ -217,6 +217,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       return unless fileAllowed(evt.target.files[0].name)
 
       readFile(evt.target.files[0])
+      evt.target.value = ""
 
   saveCrop = () ->
     result = $cropSandbox.get(0).toDataURL()

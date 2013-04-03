@@ -196,7 +196,8 @@
         if (!fileAllowed(evt.target.files[0].name)) {
           return;
         }
-        return readFile(evt.target.files[0]);
+        readFile(evt.target.files[0]);
+        return evt.target.value = "";
       }
     };
     saveCrop = function() {
