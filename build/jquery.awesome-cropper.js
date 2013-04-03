@@ -208,12 +208,12 @@
       $inputAttachTo.val(result);
       return cleanImages();
     };
-    $fileSelect.bind('change', handleFileSelect);
-    $container.bind('dragover', handleDragOver);
-    $container.bind('drop', handleDropFileSelect);
+    $fileSelect.on('change', handleFileSelect);
+    $container.on('dragover', handleDragOver);
+    $container.on('drop', handleDropFileSelect);
     if (settings.proxy_path !== void 0) {
-      $urlSelect.bind('dragover', handleDragOver);
-      $urlSelect.bind('drop', handleDropFileSelect);
+      $urlSelect.on('dragover', handleDragOver);
+      $urlSelect.on('drop', handleDropFileSelect);
       $urlSelectButton.click(function() {
         var url;
 
@@ -233,10 +233,10 @@
         });
       });
     }
-    $cancelButton.click(function() {
+    $cancelButton.on('click', function() {
       return cleanImages();
     });
-    return $applyButton.click(function() {
+    return $applyButton.on('click', function() {
       saveCrop();
       return $imagesContainer.modal('hide');
     });

@@ -226,13 +226,13 @@ $.awesomeCropper = (inputAttachTo, options) ->
     cleanImages()
 
   # Setup the listeners
-  $fileSelect.bind('change', handleFileSelect)
-  $container.bind('dragover', handleDragOver)
-  $container.bind('drop', handleDropFileSelect)
+  $fileSelect.on('change', handleFileSelect)
+  $container.on('dragover', handleDragOver)
+  $container.on('drop', handleDropFileSelect)
 
   if (settings.proxy_path != undefined)
-    $urlSelect.bind('dragover', handleDragOver)
-    $urlSelect.bind('drop', handleDropFileSelect)
+    $urlSelect.on('dragover', handleDragOver)
+    $urlSelect.on('drop', handleDropFileSelect)
 
     $urlSelectButton.click ->
       return unless $urlSelect.val().match(/^(https?:\/\/)?/)
@@ -246,10 +246,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
         $progressBar.addClass('hide')
         alert("Failed to load image")
 
-  $cancelButton.click ->
+  $cancelButton.on 'click', ->
     cleanImages()
 
-  $applyButton.click ->
+  $applyButton.on 'click', ->
     saveCrop()
     $imagesContainer.modal('hide')
 
