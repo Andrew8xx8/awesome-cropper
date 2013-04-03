@@ -6,14 +6,14 @@ $.awesomeCropper = (inputAttachTo, options) ->
   settings =
     width: 100
     height: 100
-    debug: true
+    debug: false
 
   # Merge default settings with options.
   settings = $.extend settings, options
 
   # Simple logger.
-  log = (msg) ->
-    console?.log msg if settings.debug
+  log = () ->
+    console?.log arguments if settings.debug
 
   # Input
   $inputAttachTo = $(inputAttachTo)
@@ -156,7 +156,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       $sourceIm.css
         height: viewPort + "px"
 
-    console.log(image.width(), image.height())
+    log(image.width(), image.height())
 
     if (image.width() / settings.width >= image.height() / settings.height)
       y2 = image.height()
@@ -165,7 +165,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       x2 = image.width()
       y2 = Math.round(settings.height * (image.width() / settings.width))
 
-    console.log(x2, y2, image.width(), image.height())
+    log(x2, y2, image.width(), image.height())
 
     drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1)
 
