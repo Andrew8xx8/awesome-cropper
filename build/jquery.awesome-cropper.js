@@ -10,12 +10,12 @@
     settings = {
       width: 100,
       height: 100,
-      debug: true
+      debug: false
     };
     settings = $.extend(settings, options);
-    log = function(msg) {
+    log = function() {
       if (settings.debug) {
-        return typeof console !== "undefined" && console !== null ? console.log(msg) : void 0;
+        return typeof console !== "undefined" && console !== null ? console.log(arguments) : void 0;
       }
     };
     $inputAttachTo = $(inputAttachTo);
@@ -133,7 +133,7 @@
           height: viewPort + "px"
         });
       }
-      console.log(image.width(), image.height());
+      log(image.width(), image.height());
       if (image.width() / settings.width >= image.height() / settings.height) {
         y2 = image.height();
         x2 = Math.round(settings.width * (image.height() / settings.height));
@@ -141,7 +141,7 @@
         x2 = image.width();
         y2 = Math.round(settings.height * (image.width() / settings.width));
       }
-      console.log(x2, y2, image.width(), image.height());
+      log(x2, y2, image.width(), image.height());
       drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1);
       return image.imgAreaSelect({
         aspectRatio: "" + settings.width + ":" + settings.height,
@@ -196,7 +196,8 @@
         if (!fileAllowed(evt.target.files[0].name)) {
           return;
         }
-        return readFile(evt.target.files[0]);
+        readFile(evt.target.files[0]);
+        return evt.target.value = "";
       }
     };
     saveCrop = function() {
@@ -207,12 +208,12 @@
       $inputAttachTo.val(result);
       return cleanImages();
     };
-    $fileSelect.bind('change', handleFileSelect);
-    $container.bind('dragover', handleDragOver);
-    $container.bind('drop', handleDropFileSelect);
+    $fileSelect.on('change', handleFileSelect);
+    $container.on('dragover', handleDragOver);
+    $container.on('drop', handleDropFileSelect);
     if (settings.proxy_path !== void 0) {
-      $urlSelect.bind('dragover', handleDragOver);
-      $urlSelect.bind('drop', handleDropFileSelect);
+      $urlSelect.on('dragover', handleDragOver);
+      $urlSelect.on('drop', handleDropFileSelect);
       $urlSelectButton.click(function() {
         var url;
 
@@ -232,10 +233,10 @@
         });
       });
     }
-    $cancelButton.click(function() {
+    $cancelButton.on('click', function() {
       return cleanImages();
     });
-    return $applyButton.click(function() {
+    return $applyButton.on('click', function() {
       saveCrop();
       return $imagesContainer.modal('hide');
     });

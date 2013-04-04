@@ -6,14 +6,14 @@ $.awesomeCropper = (inputAttachTo, options) ->
   settings =
     width: 100
     height: 100
-    debug: true
+    debug: false
 
   # Merge default settings with options.
   settings = $.extend settings, options
 
   # Simple logger.
-  log = (msg) ->
-    console?.log msg if settings.debug
+  log = () ->
+    console?.log arguments if settings.debug
 
   # Input
   $inputAttachTo = $(inputAttachTo)
@@ -156,7 +156,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       $sourceIm.css
         height: viewPort + "px"
 
-    console.log(image.width(), image.height())
+    log(image.width(), image.height())
 
     if (image.width() / settings.width >= image.height() / settings.height)
       y2 = image.height()
@@ -165,7 +165,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       x2 = image.width()
       y2 = Math.round(settings.height * (image.width() / settings.width))
 
-    console.log(x2, y2, image.width(), image.height())
+    log(x2, y2, image.width(), image.height())
 
     drawImage($sourceIm, 0, 0, x2 - 1, y2 - 1)
 
@@ -217,6 +217,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       return unless fileAllowed(evt.target.files[0].name)
 
       readFile(evt.target.files[0])
+      evt.target.value = ""
 
   saveCrop = () ->
     result = $cropSandbox.get(0).toDataURL()
@@ -225,13 +226,13 @@ $.awesomeCropper = (inputAttachTo, options) ->
     cleanImages()
 
   # Setup the listeners
-  $fileSelect.bind('change', handleFileSelect)
-  $container.bind('dragover', handleDragOver)
-  $container.bind('drop', handleDropFileSelect)
+  $fileSelect.on('change', handleFileSelect)
+  $container.on('dragover', handleDragOver)
+  $container.on('drop', handleDropFileSelect)
 
   if (settings.proxy_path != undefined)
-    $urlSelect.bind('dragover', handleDragOver)
-    $urlSelect.bind('drop', handleDropFileSelect)
+    $urlSelect.on('dragover', handleDragOver)
+    $urlSelect.on('drop', handleDropFileSelect)
 
     $urlSelectButton.click ->
       return unless $urlSelect.val().match(/^(https?:\/\/)?/)
@@ -245,10 +246,10 @@ $.awesomeCropper = (inputAttachTo, options) ->
         $progressBar.addClass('hide')
         alert("Failed to load image")
 
-  $cancelButton.click ->
+  $cancelButton.on 'click', ->
     cleanImages()
 
-  $applyButton.click ->
+  $applyButton.on 'click', ->
     saveCrop()
     $imagesContainer.modal('hide')
 
