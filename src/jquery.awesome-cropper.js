@@ -43,24 +43,19 @@
       $urlSelect = input('text');
       $urlSelectButton = input('button');
       $urlSelectButton.val('Upload from url');
-      $container.append(div().addClass('form-group').append($urlSelect).append($urlSelectButton));
+      $container.append(div().addClass('control-group form-inline').append($urlSelect).append($urlSelectButton));
     }
-    $progressBar = div().addClass('progress hide').append(div().addClass('progress-bar').attr({
-      role: 'progressbar',
-      'aria-valuenow': "60",
-      'aria-valuemin': "0",
-      'aria-valuemax': "100",
-      style: "width: 60%;"
-    }));
+    $progressBar = div().addClass('progress progress-striped active hide').append(div().addClass('bar').css('width', '100%'));
     $container.append($progressBar);
     $resultIm = image();
     $container.append($resultIm);
     $sourceIm = image();
     $applyButton = a('Apply').addClass('btn yes btn-primary');
-    $cancelButton = a('Cancel').addClass('btn btn-danger').attr({
-      'data-dismiss': "modal"
+    $cancelButton = a('Cancel').addClass('btn').attr({
+      'data-dismiss': "modal",
+      'aria-hidden': "true"
     });
-    $imagesContainer = div().append(div().addClass('modal-dialog').append(div().addClass('modal-content').append(div().addClass('modal-body').append(div().addClass('col-md-9').append($sourceIm)).append(div().addClass('col-md-3').append($cropSandbox)).append(div().addClass('clearfix')), div().addClass('modal-footer').append(div().addClass('btn-group').append($cancelButton).append($applyButton))))).addClass('modal').attr({
+    $imagesContainer = div().append(div().addClass('modal-dialog').append(div().addClass('modal-content').append(div().addClass('modal-body').append(div().addClass('col-md-9').append($sourceIm)).append(div().addClass('col-md-3').append($cropSandbox)), div().addClass('modal-footer').append(div().addClass('btn-group').append($cancelButton).append($applyButton))))).append().addClass('modal').attr({
       role: 'dialog'
     });
     $container.append($imagesContainer);
@@ -80,11 +75,11 @@
       return $progressBar.removeClass('hide');
     };
     removeLoading = function() {
-      $imagesContainer.on('shown.bs.modal', function() {
+      $imagesContainer.modal().on('shown', function() {
         return setAreaSelect($sourceIm);
-      }).on('hidden.bs.modal', function() {
+      }).on('hidden', function() {
         return cleanImages();
-      }).modal();
+      });
       return $progressBar.addClass('hide');
     };
     setOriginalSize = function(img) {

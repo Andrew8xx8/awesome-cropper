@@ -11,7 +11,7 @@ WorkFlow:
 
 ## Dependencies
 
-- [Twitter Bootstrap](http://twitter.github.com/bootstrap)
+- [Twitter Bootstrap](http://getbootstrap.com/) (for Boostrap 2 see [this branch](https://github.com/Andrew8xx8/awesome-cropper/releases/tag/bootstrap2))
 - [jQuery](http://jquery.com/)
 - [imgAreaSelect](http://www.odyniec.net/projects/imgareaselect/)
 

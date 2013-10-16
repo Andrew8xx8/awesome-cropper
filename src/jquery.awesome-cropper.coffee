@@ -42,10 +42,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   # File chooser
   $fileSelect = input('file')
-  $container.append(
-    div().addClass('control-group')
-      .append($fileSelect)
-  )
+  $container.append($fileSelect)
 
   if (settings.proxy_path != undefined)
     # URL input
@@ -54,14 +51,20 @@ $.awesomeCropper = (inputAttachTo, options) ->
     $urlSelectButton.val('Upload from url')
 
     $container.append(
-      div().addClass('control-group form-inline')
+      div().addClass('form-group')
         .append($urlSelect)
         .append($urlSelectButton)
     )
 
   # Progress bar
-  $progressBar = div().addClass('progress progress-striped active hide').append(
-    div().addClass('bar').css('width', '100%')
+  $progressBar = div().addClass('progress hide').append(
+    div().addClass('progress-bar').attr(
+      role: 'progressbar'
+      'aria-valuenow': "60"
+      'aria-valuemin': "0"
+      'aria-valuemax': "100"
+      style: "width: 60%;"
+    )
   )
   $container.append($progressBar)
 
@@ -71,22 +74,28 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   # Modal dialog with cropping
   $sourceIm = image()
-  $applyButton = a('Apply').addClass('btn btn-primary')
-  $cancelButton = a('Cancel').addClass('btn').attr
+  $applyButton = a('Apply').addClass('btn yes btn-primary')
+  $cancelButton = a('Cancel').addClass('btn btn-danger').attr
     'data-dismiss': "modal"
-    'aria-hidden': "true"
 
   $imagesContainer = div().append(
-    div().addClass('modal-body row-fluid').append(
-      div().addClass('span9')
-        .append($sourceIm)
-    ).append(
-      div().addClass('span3')
-      .append($cropSandbox)
+    div().addClass('modal-dialog').append(
+      div().addClass('modal-content').append(
+        div().addClass('modal-body').append(
+          div().addClass('col-md-9')
+            .append($sourceIm)
+        ).append(
+          div().addClass('col-md-3')
+          .append($cropSandbox)
+        ).append(
+          div().addClass('clearfix')
+        )
+        div().addClass('modal-footer').append(
+          div().addClass('btn-group').append($cancelButton).append($applyButton)
+        )
+      )
     )
-    div().addClass('modal-footer').append($cancelButton).append($applyButton)
-  ).append(
-  ).addClass('modal hide fade').attr
+  ).addClass('modal').attr
     role: 'dialog'
   $container.append($imagesContainer)
 
@@ -106,11 +115,12 @@ $.awesomeCropper = (inputAttachTo, options) ->
 
   removeLoading = () ->
 
-    $imagesContainer.modal().on('shown', () ->
+    $imagesContainer.on('shown.bs.modal', () ->
       setAreaSelect($sourceIm)
-    ).on('hidden', () ->
+    ).on('hidden.bs.modal', () ->
       cleanImages()
-    )
+    ).modal()
+
     $progressBar.addClass('hide')
 
   setOriginalSize = (img) ->
@@ -264,21 +274,21 @@ $.awesomeCropper = (inputAttachTo, options) ->
 $.fn.extend
   awesomeCropper: (options) ->
     return @each ()->
-      # Is there already an imgAreaSelect instance bound to this element? 
+      # Is there already an imgAreaSelect instance bound to this element?
       if $(this).data("awesomeCropper")
 
-        # Yes there is -- is it supposed to be removed? 
+        # Yes there is -- is it supposed to be removed?
         if options.remove
 
-          # Remove the plugin 
+          # Remove the plugin
           $(this).data("awesomeCropper").remove()
           $(this).removeData "awesomeCropper"
 
-          # Reset options 
+          # Reset options
         else
           $(this).data("awesomeCropper").setOptions options
       else unless options.remove
-        # No exising instance -- create a new one 
+        # No exising instance -- create a new one
         #
         $(this).data "awesomeCropper", new $.awesomeCropper(this, options)
       return $(this).data("awesomeCropper")  if options.instance
