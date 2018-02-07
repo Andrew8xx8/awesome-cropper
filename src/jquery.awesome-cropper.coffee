@@ -114,9 +114,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
     $progressBar.removeClass('hide')
 
   removeLoading = () ->
-
     $imagesContainer.on('shown.bs.modal', () ->
-      setAreaSelect($sourceIm)
     ).on('hidden.bs.modal', () ->
       cleanImages()
     ).modal()
@@ -130,6 +128,7 @@ $.awesomeCropper = (inputAttachTo, options) ->
       img.attr
         'data-original-width': tempImage.width
         'data-original-height': tempImage.height
+      setAreaSelect($sourceIm)
 
     tempImage.src = img.attr('src')
 
