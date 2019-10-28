@@ -94,7 +94,7 @@
       return tempImage.src = img.attr('src');
     };
     setImages = function(uri) {
-      return $sourceIm.attr('src', uri).load(function() {
+      return $sourceIm.attr('src', uri).on('load', (function() {
         removeLoading();
         return setOriginalSize($sourceIm);
       });
